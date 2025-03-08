@@ -114,4 +114,9 @@ jobs:
            path: nasm-x86_32-linux
 
     # Upload to GitHub releases for x86_32
-    - name: Upload NASM x86_32 to GitHub Relea
+    - name: Upload NASM x86_32 to GitHub Releases
+      uses: softprops/action-gh-release@v1
+      with: 
+        files: "nasm-x86_32-linux"
+        tag_name: latest
+        token: ${{ secrets.GITHUB_TOKEN }}
