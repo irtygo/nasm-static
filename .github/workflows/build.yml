@@ -26,3 +26,9 @@ jobs:
       with:
            name: output
            path: nasm
+    - name: Upload freeldr.sys to GitHub Releases
+      uses: softprops/action-gh-release@v1
+      with: 
+        path: "nasm"  # This grabs the output
+        tag_name: latest
+        token: ${{ secrets.GITHUB_TOKEN }}
