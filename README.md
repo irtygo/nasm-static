@@ -1,3 +1,4 @@
+A x86_64 Statically Linked version of
 NASM, the Netwide Assembler
 ===========================
 
