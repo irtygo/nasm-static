@@ -16,9 +16,9 @@ jobs:
     - name: get autoconf
       run: sudo apt-get install autoconf
     - name: autoconfigure
-      run: autoconf
+      run: ./autogen.sh
     - name: configure
-      run: ./configure
+      run: LDFLAGS=-static ./configure
     - name: make
       run: make
     - name: make check
