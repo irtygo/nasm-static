@@ -7,28 +7,111 @@ on:
     branches: [ "master" ]
 
 jobs:
-  build:
+  build_x86_64:
 
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v4
-    - name: get autoconf
+    
+    # Install build dependencies for x86_64
+    - name: Install dependencies for x86_64
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y autoconf make gcc
+
+    # Get the build system files (autogen)
+    - name: Get autoconf
       run: sudo apt-get install autoconf
-    - name: autoconfigure
+
+    # Run autogen script to set up the build system
+    - name: Autoconfigure for x86_64
       run: ./autogen.sh
-    - name: configure
+
+    # Configure the build with static linking for x86_64
+    - name: Configure for x86_64
       run: LDFLAGS=-static ./configure
-    - name: make
+
+    # Build the project for x86_64
+    - name: Make for x86_64
       run: make
-    - name: upload artifact
+
+    # Verify output for x86_64
+    - name: Verify x86_64 output
+      run: |
+        if [ -f "nasm" ]; then
+          echo "Build successful for x86_64, 'nasm' exists."
+        else
+          echo "Build failed for x86_64, 'nasm' not found!"
+          exit 1
+        fi
+
+    # Rename output and upload artifact for x86_64
+    - name: Rename and upload x86_64 artifact
+      run: mv nasm nasm-x86_64-linux
+
+    - name: Upload x86_64 artifact
       uses: actions/upload-artifact@v4.6.1
       with:
-           name: output
-           path: nasm
-    - name: Upload freeldr.sys to GitHub Releases
+           name: nasm-x86_64-linux
+           path: nasm-x86_64-linux
+
+    # Upload to GitHub releases for x86_64
+    - name: Upload NASM x86_64 to GitHub Releases
       uses: softprops/action-gh-release@v1
       with: 
-        files: "nasm"  # This grabs the output
+        files: "nasm-x86_64-linux"
         tag_name: latest
         token: ${{ secrets.GITHUB_TOKEN }}
+
+  build_x86_32:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    # Install build dependencies for x86_32
+    - name: Install dependencies for x86_32
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y autoconf make gcc gcc-multilib
+
+    # Get the build system files (autogen)
+    - name: Get autoconf for x86_32
+      run: sudo apt-get install autoconf
+
+    # Run autogen script to set up the build system
+    - name: Autoconfigure for x86_32
+      run: ./autogen.sh
+
+    # Configure the build with static linking for x86_32
+    - name: Configure for x86_32
+      run: LDFLAGS="-static" CC="gcc -m32" ./configure
+
+    # Build the project for x86_32
+    - name: Make for x86_32
+      run: make
+
+    # Verify output for x86_32
+    - name: Verify x86_32 output
+      run: |
+        if [ -f "nasm" ]; then
+          echo "Build successful for x86_32, 'nasm' exists."
+        else
+          echo "Build failed for x86_32, 'nasm' not found!"
+          exit 1
+        fi
+
+    # Rename output and upload artifact for x86_32
+    - name: Rename and upload x86_32 artifact
+      run: mv nasm nasm-x86_32-linux
+
+    - name: Upload x86_32 artifact
+      uses: actions/upload-artifact@v4.6.1
+      with:
+           name: nasm-x86_32-linux
+           path: nasm-x86_32-linux
+
+    # Upload to GitHub releases for x86_32
+    - name: Upload NASM x86_32 to GitHub Relea
